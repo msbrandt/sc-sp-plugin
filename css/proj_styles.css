@@ -1,0 +1,88 @@
+.project-admin-wrapper button,
+.project-admin-wrapper input,
+.project-admin-wrapper textarea {
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 4px;
+	display: block;
+	line-height: 18px;
+	margin: 0 0 18px;
+	padding: 8px 8px 7px;
+}
+.project-admin-wrapper button {
+	background: #2a2a2b;
+	border-color: #242425;
+	color: #ddd;
+}
+.project-admin-wrapper button:active,
+.project-admin-wrapper button:focus,
+.project-admin-wrapper button:hover {
+	background-color: #272728;
+	border-color: #1f1f20;
+	color: #fff;
+	outline: none;
+	cursor: pointer;
+}
+.project-admin-wrapper input,
+.project-admin-wrapper textarea {
+	background: #545759;
+	border-color: #616163;
+	color: #fff;
+}
+.project-admin-wrapper input{
+	width: 80%;
+}
+.project-admin-wrapper textarea {
+	padding-bottom: 8px;
+	width: 80%;
+}
+.project-admin-wrapper input[type="button"]{
+	width: 20%;
+	float: left;
+	margin-right: 50px;
+} 
+
+.project-admin-wrapper input:active,
+.project-admin-wrapper input:focus,
+.project-admin-wrapper input:hover,
+.project-admin-wrapper textarea:active,
+.project-admin-wrapper textarea:focus,
+.project-admin-wrapper textarea:hover {
+	background: #5e6163;
+	border-color: #767679;
+	outline: none;
+
+}
+::-webkit-input-placeholder {
+	color: #ccc;
+	line-height: normal;
+}
+:-moz-placeholder {
+	color: #ccc;
+}
+::-moz-placeholder {
+	color: #ccc;
+}
+:-ms-input-placeholder {
+	color: #ccc;
+}
+
+
+.project-admin-wrapper input[type="email"], 
+.project-admin-wrapper input[type="number"], 
+.project-admin-wrapper input[type="password"], 
+.project-admin-wrapper input[type="search"], 
+.project-admin-wrapper input[type="tel"], 
+.project-admin-wrapper input[type="text"], 
+.project-admin-wrapper input[type="url"], 
+.project-admin-wrapper select, 
+.project-admin-wrapper textarea{
+	background: #545759;
+	color: #eee;
+}
+
+.project-admin-section{
+	width: 50%;
+	/*background: #0ff;*/
+	float: left;
+}
