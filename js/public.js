@@ -9,8 +9,7 @@ jQuery(function($){
 	var wave_scrub = $('.wave-prog');
 	var s = $('section');
 	var windowH = $(window).height();
-	var refresh = $('#reload-playlist');
-	console.log(refresh);
+	var openBtn = $('#open-playlist');
 	$(window).on('load', function(){
 		volume_controls.attr('value', 1);
 		fader.attr('value', 0);
@@ -47,9 +46,8 @@ jQuery(function($){
 		play_pause(e, true);
 
 	});
-	refresh.on('click', function(){
-		refresh_list();
-	});
+	openBtn.on('click', openPlaylist);
+
 	var act_pos = -1;
 	var loaded_list = $('#loaded-playlist ul li');
 	var ll = loaded_list.length -1;
@@ -108,7 +106,23 @@ jQuery(function($){
 		};
 
 	});
-
+	function openPlaylist(){
+		var pl = $('#loaded-playlist');
+		var plData = $('#loaded-playlist').data("isopen");
+		console.log(plData);
+		if(plData){
+			pl.hide();
+			openBtn.children('span').attr('class', 'glyphicon glyphicon-open')
+			openBtn.css('top', '115px');
+			pl.data("isopen", false);
+		}else{
+			pl.show();
+			openBtn.children('span').attr('class', 'glyphicon glyphicon-save')
+			openBtn.css('top', 0);
+			pl.data("isopen", true);
+	
+		}
+	}
 	function activate_deck(button){
 		var tog_btn = button,
 			act_this_deck = tog_btn.parent(),

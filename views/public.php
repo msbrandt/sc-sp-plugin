@@ -1,6 +1,5 @@
 <?php 
 function display_mixer(){
-	
 ?>
 <section>
 	<div class="deck" id="deck-a" data-volume_control="vo-a">
@@ -78,9 +77,9 @@ function display_mixer(){
 	<div id="slider">
 		<input type="range" min="-1" max="1" value="0" step=".05" id="sli">
 	</div>
-<div id="reload-playlist"><span class="glyphicon glyphicon-refresh"></span></div>
+<div id="open-playlist"><span class="glyphicon glyphicon-open"></span></div>
 
-<div id="loaded-playlist">
+<div id="loaded-playlist" data-isopen="false">
 	<ul>
 	<?php
 		mixer_showcase::load_song_list_li();

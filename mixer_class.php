@@ -60,6 +60,7 @@ class mixer_showcase {
 
 
 		// Add the options page and menu item.
+	wp_enqueue_script( 'soundcloud', '//connect.soundcloud.com/sdk.js' ); 
 		
 		add_action( 'wp_enqueue_scripts', array( $this, 'activate_mixer_jquery' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'mixer_public_scripts' ) );
