@@ -9,7 +9,16 @@ jQuery(function($){
 	var wave_scrub = $('.wave-prog');
 	var s = $('section');
 	var windowH = $(window).height();
+	var windowW = $(window).width();
 	var openBtn = $('#open-playlist');
+	var progBar = $('.progress');
+	if(windowW < 641){
+		var scrubBtns = $('.prg-open-btn');
+		scrubBtns.on('click', function(e){
+			showScrubber(e);
+		});
+	}
+	console.log(scrubBtns);
 	$(window).on('load', function(){
 		volume_controls.attr('value', 1);
 		fader.attr('value', 0);
@@ -108,26 +117,62 @@ jQuery(function($){
 	});
 	function openPlaylist(){
 		var pl = $('#loaded-playlist');
+		var ww = $(window).width();
+
 		var plData = $('#loaded-playlist').data("isopen");
-		console.log(plData);
 		if(plData){
 			pl.hide();
-			openBtn.children('span').attr('class', 'glyphicon glyphicon-open')
-			openBtn.css('top', '115px');
+			openBtn.children('span').attr('class', 'glyphicon glyphicon-open');
+		
+			if(ww > 641){
+				openBtn.css('top', '115px');
+
+			}else{
+				// openBtn.css({'top': '-60px', 'background-color': '#ff5200', 'color': '#333'});
+				openBtn.css({'top': '85px', 'background-color': '#333', 'color': '#ccc'});
+			
+			}
+
 			pl.data("isopen", false);
 		}else{
 			pl.show();
-			openBtn.children('span').attr('class', 'glyphicon glyphicon-save')
-			openBtn.css('top', 0);
+			openBtn.children('span').attr('class', 'glyphicon glyphicon-save');
+			if(ww > 641){
+				openBtn.css('top', 0);
+
+			}else{
+				openBtn.css({'top': -60, 'background-color': '#ff5200', 'color': '#333'});
+			}
 			pl.data("isopen", true);
 	
 		}
+	}
+	function showScrubber(e){
+		var thisPro = $(e.currentTarget);
+		console.log(thisPro.data());
+
+		// var isOpen = 
+		var theDeck = thisPro.parent();
+		var progCon = theDeck.find('.progress');
+
+		if(thisPro.data('isopen')){
+			thisPro.data('isopen', false);
+			scrubBtns.data('isopen', false);
+			progBar.hide();
+		}else{
+			progBar.hide();
+			scrubBtns.data('isopen', false);
+			thisPro.data('isopen', true);
+
+			progCon.show();
+		}
+		// progBar.hide();
+		// progCon.show();
 	}
 	function activate_deck(button){
 		var tog_btn = button,
 			act_this_deck = tog_btn.parent(),
 			the_vinyl = act_this_deck.find('.vinyl');
-		console.log(button);
 		activate_btn.removeClass('active');
 		activate_btn.children().removeClass('glyphicon-remove-sign');
 		
@@ -137,6 +182,7 @@ jQuery(function($){
 		$('audio').removeClass('active-p');
 		the_vinyl.addClass('active-p');
 	}
+
 	function refresh_list(){
 		var list_container = $('#loaded-playlist ul');
 		$.ajax({
@@ -154,6 +200,9 @@ jQuery(function($){
 		});		
 	}
 	function select_track(the_track){
+		var pl = $('#loaded-playlist');
+		var ww = $(window).width();
+
 		var this_track_obj = the_track,
 			this_track_txt = this_track_obj.text(),
 			this_track_id = this_track_obj.data('id'),
@@ -183,6 +232,11 @@ jQuery(function($){
 
 		});
 		$('#loaded-playlist ul li').removeClass('act-song');
+		pl.hide();
+		if(ww < 641){
+			
+		}
+
 	};
 	function change_volume(controler){
 		var this_control = controler,

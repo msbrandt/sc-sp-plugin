@@ -10,6 +10,7 @@ function display_mixer(){
 				<div class="time-display">
 					<span class="current-time">0:00</span>
 					<span>/</span>
+					<br class="mobile-divide" />
 					<span class="total-time">0:00</span>
 				</div>
 				<div class="vinyl-layer0">
@@ -20,7 +21,8 @@ function display_mixer(){
 					</div>
 				</div>
 		</div>
-
+		
+		<div class="prg-open-btn" data-isopen="false"><span class="glyphicon glyphicon-expand"></span></div>
 		<div class="progress">
 			<input class="wave-prog" value="0" id="wave-a" type="range" min='0' max="">			
 		</div>
@@ -41,6 +43,7 @@ function display_mixer(){
 				<div class="time-display">
 					<span class="current-time">0:00</span>
 					<span>/</span>
+					<br class="mobile-divide" />
 					<span class="total-time">0:00</span>
 				</div>
 				<div class="vinyl-layer0">
@@ -51,9 +54,9 @@ function display_mixer(){
 					</div>
 				</div>
 			</div>
+		<div class="prg-open-btn" data-isopen="false"><span class="glyphicon glyphicon-expand"></span></div>
 
 		<div class="progress">
-
 			<input class="wave-prog" value="0" id="wave-b" type="range" min='0' max="">
 
 		</div>
