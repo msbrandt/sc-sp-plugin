@@ -2,10 +2,11 @@
 function display_mixer(){
 ?>
 <section>
+	<div id="soundcloud-credit"></div>
 	<div class="deck" id="deck-a" data-volume_control="vo-a">
 		<audio class="audio" id="au-a"></audio>
 
-		<div class="active-deck-button"><div class="glyphicon"></div></div>
+		<div class="active-deck-button"><div class="act-container"><span class="glyphicon"></span></div></div>
 		<div class="vinyl">
 				<div class="time-display">
 					<span class="current-time">0:00</span>
@@ -37,7 +38,7 @@ function display_mixer(){
 	<div class="deck" id="deck-b" data-volume_control="vo-b">
 		<audio class="audio" id="au-b"></audio>
 
-		<div class="active-deck-button"><div class="glyphicon"></div></div>
+		<div class="active-deck-button"><div class="act-container"><span class="glyphicon"></span></div></div>
 
 			<div class="vinyl">
 				<div class="time-display">

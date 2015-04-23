@@ -71,6 +71,7 @@ class mixer_showcase {
 
 		add_action( 'wp_ajax_select_songs', array($this, 'select_songs_handler') );
 		add_action( 'wp_ajax_save_playlist', array($this, 'save_playlist_handler') );
+		add_action( 'wp_ajax_delete_song', array($this, 'delete_song_handler') );
 
 
 	}
@@ -234,7 +235,7 @@ class mixer_showcase {
 			song_title MEDIUMTEXT NOT NULL,
 			song_duration MEDIUMINT NOT NULL,
 			sc_wave MEDIUMTEXT NOT NULL,
-			sc_art MEDIUMINT NOT NULL,
+			sc_art MEDIUMTEXT NOT NULL,
 			PRIMARY KEY  song_id (song_id)
 			);";
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -257,53 +258,108 @@ public function convert_duration($mili){
 	$input = floor($mili / 1000);
 
 	$seconds = $input % 60;
+
+	if(strlen($seconds) == 1){
+		if($seconds == 0){
+			$seconds = $seconds . '0';
+		}else{
+			$seconds = '0'.$seconds;
+		}
+	}
 	$input = floor($input / 60);
+	// return $seconds;
 
 	$minutes = $input % 60;
 	$input = floor($input / 60);
 
 
+
 	$time = $minutes.':'.$seconds;
 	return $time;
 }
+
 public function select_songs_handler(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'sc_sp_alpha';
 	$the_file = json_decode( stripcslashes( $_REQUEST['file_lines']), true);
-	
-	// echo 'wehifuhewuiahfwehafuihi';
+	$search_type = stripcslashes( $_REQUEST['search_type']);
+	// var_dump($the_file);
+	// echo $search_type;
 
 	require_once plugin_dir_path( __FILE__ ).'/Services/Soundcloud.php';
 	
 	$client = new Services_Soundcloud('7d9677620e4d860d055604be6c25d43a', 'ecbbaf33f2f146a8ebb92d195074e219');
 	$client->setCurlOptions(array(CURLOPT_FOLLOWLOCATION => 1) );
 	
-	foreach ($the_file as $f) {
-		$seachTracks = json_decode($client->get('tracks', array('q'=> $f, 'limit'=>5)));
-		echo '<tr class="search-title"><td colspan="4">'.$f.'</td></tr>';
+	if($search_type == "file"){
+		foreach ($the_file as $f) {
+			$seachTracks = json_decode($client->get('tracks', array('q'=> $f, 'limit'=>5)));
+
+			echo '<li class="search-title">'.$f.'</li>';
+			foreach ($seachTracks as $track) {
+				$t = $track->title;
+				$t_id = $track->id;
+				$t_wave = $track->waveform_url;
+				$t_d = $track->duration;
+				if($track->artwork_url){
+					$t_a = $track->artwork_url;
+				}else{
+					$t_a = plugin_dir_url( __FILE__ ) . 'img/no-img2.jpg';
+				}
+
+				$new_duration = $this->convert_duration($t_d);
+
+			 	?>
+  		 		<li class="search-result" data-title="<?php echo $t; ?>" data-wave="<?php echo $t_wave; ?>" data-duration="<?php echo $t_d; ?>"data-ID="<?php echo $t_id; ?>" data-art="<?php echo $t_a; ?>">
+			 		<div class='sr-padding'>
+			 			<div class="sr-artwork-container">
+							<div class="sr-artwork" style="background-image: url('<?php echo $t_a; ?>')"></div>
+			 			</div>
+			 			<div class="sr-content">
+			 				<ul>
+			 					<li><?php echo $t; ?></li>
+			 					<li><?php echo $new_duration; ?></li>
+			 				</ul>
+			 			</div>
+			 		</div>
+			 	</li> 
+			 	<?
+			}
+
+		}
+	}else if($search_type == "search"){
+		$seachTracks = json_decode($client->get('tracks', array('q'=> $the_file, 'limit'=>20)));
+		echo '<li class="search-title">'.$the_file.'</li>';
+		
 		foreach ($seachTracks as $track) {
 			$t = $track->title;
 			$t_id = $track->id;
 			$t_wave = $track->waveform_url;
 			$t_d = $track->duration;
 			$t_a = $track->artwork_url;
-
+			
+			if($track->artwork_url){
+				$t_a = $track->artwork_url;
+			}else{
+				$t_a = plugin_dir_url( __FILE__ ) . 'img/no-img2.jpg';
+			}
 			$new_duration = $this->convert_duration($t_d);
-
-			$tlb_str = '<tr data-title="'.$t.'" data-wave="'.$t_wave.'" data-duration="'.$t_d.'"data-ID="'.$t_id.'">'.
-							'<td id="sc-id">'.$t_id.'</td>'.
-							'<td id="t-title">'.$t.'</td>'.
-							'<td id="t-duration">'.$new_duration.'</td>'.
-							'<td id="t-art"><div class="artwork" style="backgorund-url: url('.$t_a.')"></div></td>'.
-							'<td id="t-wave" class="hidden-data">'.$t_wave.'</td>'.
-						'</tr>';
-
-			$this_str = '<li data-title="'.$t.'" data-wave="'.$t_wave.'" data-duration="'.$t_d.'"data-ID="'.$t_id.'">'.$t.'</li>';
-			// echo $this_str;
-			echo $tlb_str;
-
+?>
+			<li class="search-result" data-title="<?php echo $t; ?>" data-wave="<?php echo $t_wave; ?>" data-duration="<?php echo $t_d; ?>"data-ID="<?php echo $t_id; ?>" data-art="<?php echo $t_a; ?>">
+				<div class='sr-padding'>
+					<div class="sr-artwork-container">
+						<div class="sr-artwork" style="background-image: url('<?php echo $t_a; ?>')"></div>
+					</div>
+					<div class="sr-content">
+						<ul>
+							<li><?php echo $t; ?></li>
+							<li><?php echo $new_duration; ?></li>
+						</ul>
+					</div>
+				</div>
+			</li> 
+<?
 		}
-
 	}
 	
 	exit();	
@@ -314,8 +370,9 @@ public function save_playlist_handler(){
 	$table_name = $wpdb->prefix . 'sc_sp_alpha';
 	$saved_list = $_REQUEST['track_list'];
 	
+
 	foreach ($saved_list as $file) {
-		var_dump($file);
+		
 		$sc_title = $file['title'];
 		$sc_id = $file['id'];
 		$sc_duration = $file['duration'];
@@ -346,18 +403,17 @@ public function save_playlist_handler(){
 	exit();
 }
 
-// function delete_song_handler(){
-// 	global $wpdb;
-// 	$table_name = $wpdb->prefix . 'sc_sp_alpha';
-// 	$to_delete =  $_REQUEST['delete_data'];
+function delete_song_handler(){
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'sc_sp_alpha';
+	$to_delete =  $_REQUEST['delete_data'];
 
-// 	foreach ($to_delete as $track_id) {
-// 		$wpdb->delete( $table_name, array( 'sc_id' => $track_id ) );	
-// 	}
+	foreach ($to_delete as $track_id) {
+		$wpdb->delete( $table_name, array( 'sc_id' => $track_id ) );	
+	}
 	
-// 	exit();
-// }
-// add_action( 'wp_ajax_delete_song', 'delete_song_handler');
+	exit();
+}
 
 	public function load_song_list_tbl(){
 		global $wpdb;
@@ -366,16 +422,21 @@ public function save_playlist_handler(){
 		$this_q = $wpdb->get_results("SELECT * FROM " . $table_name . "");
 		foreach ($this_q as $s) {
 			$read_duration = $this->convert_duration($s->song_duration);
-			$tlb_str =  
-				'<tr class="db-list" data-title="'.$s->song_title.'" data-wave="'.$s->sc_wave.'" data-duration="'.$s->song_duration.'"data-ID="'.$s->sc_id.'">'.
-					'<td id="sc-id">'.$s->sc_id.'</td>'.
-					'<td id="t-title">'.$s->song_title.'</td>'.
-					'<td id="t-duration">'.$read_duration.'</td>'.
-					'<td id="t-art"><div class="artwork" style="backgorund-url: url('.$t_a.')"></div></td>'.
-					'<td id="t-wave" class="hidden-data">'.$s->sc_wave.'</td>'.
-				'</tr>';
-			// $the_str = '<li class="db-list" data-wave="'.$s->sc_wave.'" data-duration="'.$s->song_duration.'"data-ID="'.$s->sc_id.'">'.$s->song_title.'</li>';
-			echo $tlb_str;
+			?>
+  				<li class="search-result db-list" data-title="<?php echo $s->song_title; ?>" data-wave="<?php echo $s->sc_wave; ?>" data-duration="<?php echo $s->song_duration; ?>"data-ID="<?php echo $s->sc_id; ?>" data-art="<?php echo $s->sc_art; ?>">
+					<div class='sr-padding'>
+						<div class="sr-artwork-container">
+							<div class="sr-artwork" style="background-image: url('<?php echo $s->sc_art; ?>')"></div>
+						</div>
+						<div class="sr-content">
+							<ul>
+								<li><?php echo $s->song_title; ?></li>
+								<li><?php echo $read_duration; ?></li>
+							</ul>
+						</div>
+					</div>
+				</li>
+	<?php
 		}
 		exit();
 

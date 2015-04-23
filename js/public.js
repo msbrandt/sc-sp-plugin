@@ -18,7 +18,6 @@ jQuery(function($){
 			showScrubber(e);
 		});
 	}
-	console.log(scrubBtns);
 	$(window).on('load', function(){
 		volume_controls.attr('value', 1);
 		fader.attr('value', 0);
@@ -56,7 +55,24 @@ jQuery(function($){
 
 	});
 	openBtn.on('click', openPlaylist);
+	decks.on('click', function(){
+		var playList = $('#loaded-playlist');
+		if(playList.data('isopen')){
+			playList.hide();
+			playList.data('isopen', false);
+			openBtn.children('span').attr('class', 'glyphicon glyphicon-open');
 
+			if(windowW > 641){
+				openBtn.css('top', '115px');
+
+			}else{
+				openBtn.css({'top': '85px', 'background-color': '#333', 'color': '#ccc'});
+
+			}
+
+
+		}
+	});
 	var act_pos = -1;
 	var loaded_list = $('#loaded-playlist ul li');
 	var ll = loaded_list.length -1;
@@ -149,7 +165,6 @@ jQuery(function($){
 	}
 	function showScrubber(e){
 		var thisPro = $(e.currentTarget);
-		console.log(thisPro.data());
 
 		// var isOpen = 
 		var theDeck = thisPro.parent();
@@ -173,11 +188,13 @@ jQuery(function($){
 		var tog_btn = button,
 			act_this_deck = tog_btn.parent(),
 			the_vinyl = act_this_deck.find('.vinyl');
+		var b = $('.active-deck-button > div > span');
+		var t = tog_btn.children().children();
+
 		activate_btn.removeClass('active');
-		activate_btn.children().removeClass('glyphicon-remove-sign');
-		
+		b.removeClass('glyphicon-remove-sign');
 		tog_btn.addClass('active has-been');
-		tog_btn.children().addClass('glyphicon-remove-sign');
+		t.addClass('glyphicon-remove-sign');
 
 		$('audio').removeClass('active-p');
 		the_vinyl.addClass('active-p');
@@ -194,7 +211,6 @@ jQuery(function($){
 			success: function(response){
 				list_container.children().remove();
 				list_container.append(response);
-				console.log(response);
 				// return false;
 			}
 		});		
@@ -233,8 +249,14 @@ jQuery(function($){
 		});
 		$('#loaded-playlist ul li').removeClass('act-song');
 		pl.hide();
+		openBtn.children('span').attr('class', 'glyphicon glyphicon-open');
+		pl.data('isopen', false);
+
 		if(ww < 641){
+			openBtn.css({'top': '85px', 'background-color': '#333', 'color': '#ccc'});
 			
+		}else{
+			openBtn.css('top', '115px');
 		}
 
 	};

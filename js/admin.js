@@ -1,10 +1,13 @@
 jQuery(function($){
 	var button = $('#sc-load-btn');
+	var searchBtn = $('#sc-search-btn');
 	var lda = $('#loaded > ul');
 	var newData = [];
+	var selectSection = $('.loaded-tracks');
+	var loadedSection = $('#already-loaded');
 
 	button.on('click', function(e){
-		var the_file = document.getElementById('input');
+		var the_file = document.getElementById('load-list');
 		var x = the_file.files[0];
 
 		if(!x){
@@ -13,9 +16,25 @@ jQuery(function($){
 			remove_tbl();
 			readFile(x);
 		}
-
 	});
 
+	searchBtn.on('click', function(){
+		var searchStr = $('#search-sc').val();
+		select_pl(searchStr, 'search');
+	});
+
+	selectSection.on('click', 'li', function(){
+		var selected = $(this);
+		var p = selected.parent();
+
+		if(p.attr('id')){
+			if(selected.hasClass('act')){
+				selected.removeClass('act');
+			}else if(!selected.hasClass('search-title')){
+				selected.addClass('act');
+			}
+		}
+	})
 	function readFile(file) {
 
 		var reader = new FileReader();
@@ -28,7 +47,7 @@ jQuery(function($){
 
 			}
 			$('#select-from img').show();
-			select_pl(newData);
+			select_pl(newData, 'file');
 		}
 		reader.readAsText(file);
 	}
@@ -36,39 +55,28 @@ jQuery(function($){
 		var tbl_tr = $('#select-tlb tbody tr');
 		tbl_tr.remove();
 	}
-	function select_pl(new_file){
+	function select_pl(new_file, st){
 		var theFile = JSON.stringify(new_file);
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
 				action: 'select_songs',
-				file_lines: theFile
+				file_lines: theFile,
+				search_type: st
 			},
 			success: function(response){
 				$('#select-from img').hide();
 				// $('#select-to-load .sel-box:eq(0) ul').append(response);
-				$('#select-to-load #select-from #select-tlb tbody').append(response);
+				$('#select-to-load #select-from ul.loaded-tracks').append(response);
 				return false;
 			}
 		});
 	}
 
-	var b = $('#select-to-load > .sel-box > table > tbody');
-
-	b.on('click', 'tr', function(e){
-		var selected = $(this);
-		if(selected.hasClass('act')){
-			selected.removeClass('act');
-		}else if(!selected.hasClass('search-title')){
-			selected.addClass('act');
-		}
-	});
-
 	$('#add-btn').on('click', function(){
-		var active = $('#select-to-load > .sel-box > #select-tlb > tbody > tr.act');
-		var loaded_tlb = $('#que-to-load > #loaded-tlb > tbody');
-
+		var active = $('#select-from-box > li.act');
+		var loaded_tlb = $('#already-loaded');
 		var act_array = [];
 		for(var i = 0; i<active.length; i++){
 			var current_track = $(active[i]);
@@ -78,7 +86,7 @@ jQuery(function($){
 
 	});
 	$('#save-btn').on('click', function(){
-		var in_que = $('#que-to-load > #loaded-tlb > tbody > tr'),
+		var in_que = $('#already-loaded > li'),
 			saved_list = [];
 
 		for(var x = 0; x < in_que.length; x++ ) {
@@ -89,7 +97,7 @@ jQuery(function($){
 				track_data = current_track.data();
 			
 				saved_list.push(track_data);			
-			}	
+			}
 		};
 
 		$.ajax({
@@ -101,7 +109,7 @@ jQuery(function($){
 			},
 			success: function(response){
 				$('#status').html('Songs Saved!');
-				$('.temp-sav').removeClass().addClass('db-list');
+				$('.temp-sav').removeClass('temp-sav').addClass('db-list');
 				// return false;
 			}
 		});
@@ -109,7 +117,7 @@ jQuery(function($){
 	});
 
 	$('#remove-btn').on('click', function(){
-		var to_delete = $('#que-to-load > #loaded-tlb > tbody > tr.act'),
+		var to_delete = $('#already-loaded > li.act'),
 			delete_array = [];
 			
 			for(var x=0; x<to_delete.length; x++){
@@ -130,6 +138,19 @@ jQuery(function($){
 			}
 		});	
 		to_delete.remove();
+
+	});
+
+	document.addEventListener('keypress', function(e){
+		e.preventDefault();
+		if(e.keyCode == 13){
+			var searchStr = $('#search-sc').val();
+			if(searchStr){
+				select_pl(searchStr, 'search');
+			}else{
+				alert('Please enter text to search');
+			}
+		}
 
 	});
 
